@@ -1,7 +1,8 @@
 const { jStat } = require('jstat');
 const reducer = (accumulator, currentValue) => accumulator + currentValue;
 const flattened = (arr) => [].concat(...arr);
-// Compute the levene test
+
+/**  the levene test */
 function leveneTest(samples) {
   // Compute N, the total number of observations
   // and p, the number of samples
@@ -55,6 +56,7 @@ function anovaTest(samples) {
   };
 }
 
+/**  Welch Test */
 function welchTest(samples) {
   // Compute weights and ajusted means
   var r = samples.length;
@@ -96,7 +98,7 @@ function welchTest(samples) {
   };
 }
 
-// games-howell test
+/**  games-howell test */
 function GHTest(samples) {
   const averV = (s) => jStat.variance(s, true) / s.length;
   var groupList = samples.flatMap((v, i) =>
@@ -121,6 +123,8 @@ function GHTest(samples) {
     };
   });
 }
+
+/** Compact Letter Display */
 
 function multcompLetters(samples, compareR) {
   // input: input result is an array
@@ -240,13 +244,14 @@ function multcompLetters(samples, compareR) {
   return finalMarker;
 }
 
+/**  Statistic test process  */
 function statsTest(samples, name) {
   let lResult = leveneTest(samples).pValue;
 
   if (lResult)
     if (lResult > 0.05) {
       let aResult = anovaTest(samples).pValue;
-      if (aResult > 0.5) {
+      if (aResult > 0.05) {
         return ['a', 'a', 'a', 'a'];
       } else {
         var tukeyResult = jStat.tukeyhsd(samples);
@@ -257,7 +262,7 @@ function statsTest(samples, name) {
       }
     } else {
       let wResult = welchTest(samples).pValue;
-      if (wResult > 0.5) {
+      if (wResult > 0.05) {
         return ['a', 'a', 'a', 'a'];
       } else {
         var GHResult = GHTest(samples);
